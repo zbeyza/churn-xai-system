@@ -1,0 +1,6 @@
+data/*.csv
+artifacts/
+reports/
+__pycache__/
+.DS_Store
+!data/README.md
