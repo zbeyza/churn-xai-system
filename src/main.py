@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+"""Command-line entrypoint for the churn pipeline."""
+
 from argparse import ArgumentParser
 from pathlib import Path
 
@@ -12,6 +14,7 @@ from .explain import explain_best_model
 
 
 def _build_parser() -> ArgumentParser:
+    """CLI flags for data location and download behavior."""
     parser = ArgumentParser(description="IBM Telco churn training + XAI pipeline")
     parser.add_argument(
         "--data",
@@ -34,6 +37,7 @@ def _build_parser() -> ArgumentParser:
 
 
 def main() -> None:
+    """Run the full pipeline from raw CSV to reports."""
     parser = _build_parser()
     args = parser.parse_args()
 
@@ -49,10 +53,10 @@ def main() -> None:
     # Orchestrate the full flow: preprocess -> train -> evaluate -> explain.
     X_train, X_test, y_train, y_test, feature_names, _ = preprocess(str(data_path))
     models = train_models(X_train, y_train)
-    results_sorted = evaluate_models(models, X_test, y_test)
-    explain_best_model(models, results_sorted, X_train, X_test, y_test, feature_names)
+    ranked_results = evaluate_models(models, X_test, y_test)
+    explain_best_model(models, ranked_results, X_train, X_test, y_test, feature_names)
 
-    print("\nOutputs written to:")
+    print("\nDone. Outputs written to:")
     print(f"- {ARTIFACTS_DIR}")
     print(f"- {REPORTS_DIR}")
 
