@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+"""Download helper for the IBM Telco Customer Churn dataset.
+
+This module keeps the network logic isolated and validates the CSV
+before it lands in the data folder.
+"""
+
 from pathlib import Path
 from typing import Optional
 
@@ -10,6 +16,7 @@ from .config import DATA_DIR, DATA_FILE, RAW_URL, TARGET_COL
 
 
 def _validate_csv(path: Path) -> None:
+    """Sanity-check the CSV to avoid silently using the wrong file."""
     df = pd.read_csv(path)
     if TARGET_COL not in df.columns:
         raise ValueError(
@@ -19,6 +26,10 @@ def _validate_csv(path: Path) -> None:
 
 
 def download_data(raw_url: Optional[str] = None, dest_path: Optional[Path] = None) -> Path:
+    """Fetch the dataset over HTTP and write it to disk.
+
+    If download fails, this raises a clear error with manual instructions.
+    """
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     url = raw_url if raw_url is not None else RAW_URL
     dest = dest_path if dest_path is not None else DATA_FILE
