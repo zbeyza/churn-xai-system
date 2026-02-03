@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+"""Explainability helpers for the best-performing model."""
+
 from typing import Dict, List
 
 import matplotlib.pyplot as plt
@@ -16,15 +18,16 @@ def _is_tree_model(model: object) -> bool:
 
 def explain_best_model(
     models: Dict[str, object],
-    results_sorted: List[dict],
+    ranked_results: List[dict],
     X_train,
     X_test,
     y_test,
     feature_names: list[str],
 ) -> None:
+    """Generate SHAP plots (or permutation fallback) for the best model."""
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    best = results_sorted[0]
+    best = ranked_results[0]
     best_name = best["name"]
     model = models[best_name]
 

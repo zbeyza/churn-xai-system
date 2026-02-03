@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+"""Evaluation utilities: metrics, reports, and plots."""
+
 from typing import Dict, List
 
 import matplotlib.pyplot as plt
@@ -15,11 +17,12 @@ from .config import REPORTS_DIR
 
 
 def evaluate_models(models: Dict[str, object], X_test, y_test) -> List[dict]:
+    """Evaluate all models, save curves, and return sorted results."""
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    results = []
+    model_rows = []
 
-    print("\nModel performance (probabilities on test set):")
+    print("\nQuick pass on the test set:")
     print("-" * 60)
     plt.figure(figsize=(7, 5))
     for name, model in models.items():
@@ -34,7 +37,7 @@ def evaluate_models(models: Dict[str, object], X_test, y_test) -> List[dict]:
         print(f"{name:>6} | ROC-AUC: {roc_auc:.4f} | PR-AUC: {pr_auc:.4f}")
         print(classification_report(y_test, y_pred, digits=3))
 
-        results.append(
+        model_rows.append(
             {
                 "name": name,
                 "roc_auc": roc_auc,
@@ -53,7 +56,7 @@ def evaluate_models(models: Dict[str, object], X_test, y_test) -> List[dict]:
     plt.close()
 
     plt.figure(figsize=(7, 5))
-    for result in results:
+    for result in model_rows:
         # Plot PR curves on a single axis for easy comparison.
         precision, recall, _ = precision_recall_curve(y_test, result["y_proba"])
         plt.plot(recall, precision, label=f"{result['name']} (AP={result['pr_auc']:.3f})")
@@ -66,9 +69,9 @@ def evaluate_models(models: Dict[str, object], X_test, y_test) -> List[dict]:
     plt.savefig(REPORTS_DIR / "pr_curve.png")
     plt.close()
 
-    results_sorted = sorted(results, key=lambda x: x["pr_auc"], reverse=True)
+    ranked = sorted(model_rows, key=lambda x: x["pr_auc"], reverse=True)
     print("\nSummary (sorted by PR-AUC):")
-    for r in results_sorted:
+    for r in ranked:
         print(f"- {r['name']}: ROC-AUC={r['roc_auc']:.4f}, PR-AUC={r['pr_auc']:.4f}")
 
-    return results_sorted
+    return ranked
