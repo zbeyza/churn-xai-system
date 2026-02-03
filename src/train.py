@@ -12,6 +12,7 @@ from .config import ARTIFACTS_DIR
 def train_models(X_train, y_train) -> Dict[str, object]:
     ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Baseline models: linear, bagged trees, and boosting.
     models = {
         "logreg": LogisticRegression(class_weight="balanced", max_iter=2000),
         "rf": RandomForestClassifier(
@@ -25,6 +26,7 @@ def train_models(X_train, y_train) -> Dict[str, object]:
     trained = {}
     for name, model in models.items():
         model.fit(X_train, y_train)
+        # Persist each model for reproducibility.
         joblib.dump(model, ARTIFACTS_DIR / f"{name}.joblib")
         trained[name] = model
 
