@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+"""Preprocessing for the churn dataset.
+
+Keeps the feature engineering modest and predictable, so model behavior
+is easy to reason about.
+"""
+
 from pathlib import Path
 from typing import Tuple
 
@@ -12,6 +18,7 @@ from .config import DATA_FILE, TARGET_COL
 def preprocess(
     data_path: str | None = None,
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series, list[str], pd.DataFrame]:
+    """Load, clean, encode, and split the churn dataset."""
     path = DATA_FILE if data_path is None else Path(data_path)
     df = pd.read_csv(path)
 

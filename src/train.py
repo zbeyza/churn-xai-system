@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+"""Model training and artifact persistence."""
+
 from typing import Dict
 
 import joblib
@@ -10,6 +12,7 @@ from .config import ARTIFACTS_DIR
 
 
 def train_models(X_train, y_train) -> Dict[str, object]:
+    """Train a small set of baseline models and save them to disk."""
     ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
 
     # Baseline models: linear, bagged trees, and boosting.
