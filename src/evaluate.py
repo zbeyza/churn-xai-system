@@ -19,6 +19,8 @@ def evaluate_models(models: Dict[str, object], X_test, y_test) -> List[dict]:
 
     results = []
 
+    print("\nModel performance (probabilities on test set):")
+    print("-" * 60)
     plt.figure(figsize=(7, 5))
     for name, model in models.items():
         y_proba = model.predict_proba(X_test)[:, 1]
@@ -28,8 +30,8 @@ def evaluate_models(models: Dict[str, object], X_test, y_test) -> List[dict]:
         plt.plot(fpr, tpr, label=f"{name} (AUC={roc_auc:.3f})")
 
         y_pred = (y_proba >= 0.5).astype(int)
-        print(f"\nModel: {name}")
-        print(f"ROC-AUC: {roc_auc:.4f} | PR-AUC: {pr_auc:.4f}")
+        # Print a concise summary plus a full classification report.
+        print(f"{name:>6} | ROC-AUC: {roc_auc:.4f} | PR-AUC: {pr_auc:.4f}")
         print(classification_report(y_test, y_pred, digits=3))
 
         results.append(
@@ -52,6 +54,7 @@ def evaluate_models(models: Dict[str, object], X_test, y_test) -> List[dict]:
 
     plt.figure(figsize=(7, 5))
     for result in results:
+        # Plot PR curves on a single axis for easy comparison.
         precision, recall, _ = precision_recall_curve(y_test, result["y_proba"])
         plt.plot(recall, precision, label=f"{result['name']} (AP={result['pr_auc']:.3f})")
 
