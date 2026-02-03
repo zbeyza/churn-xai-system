@@ -34,6 +34,7 @@ def explain_best_model(
     top_idx = int(np.argmax(y_proba))
 
     try:
+        # Prefer native SHAP explainers when available.
         if _is_tree_model(model):
             explainer = shap.TreeExplainer(model)
         else:
@@ -66,6 +67,7 @@ def explain_best_model(
             plt.savefig(REPORTS_DIR / "shap_local.png")
             plt.close()
         else:
+            # Fallback for older SHAP versions without Explanation.
             shap.summary_plot(
                 shap_values_to_plot[top_idx: top_idx + 1],
                 X_test.iloc[top_idx: top_idx + 1],
@@ -83,6 +85,7 @@ def explain_best_model(
             print(f"- {feature_names[i]}: {mean_abs[i]:.4f}")
     except Exception as exc:
         print(f"SHAP failed ({exc}). Falling back to permutation importance.")
+        # Model-agnostic fallback when SHAP can't run.
         result = permutation_importance(
             model,
             X_test,
