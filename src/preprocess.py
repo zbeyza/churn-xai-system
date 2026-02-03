@@ -21,11 +21,15 @@ def preprocess(
     if "customerID" in df.columns:
         df = df.drop(columns=["customerID"])
 
+    # Map churn label to 1/0 for modeling.
     df[TARGET_COL] = df[TARGET_COL].map({"Yes": 1, "No": 0})
     if df[TARGET_COL].isna().any():
-        raise ValueError("Target column contains unexpected values; expected Yes/No only.")
+        raise ValueError(
+            "Target column contains unexpected values; expected only 'Yes' or 'No'."
+        )
 
     if "TotalCharges" in df.columns:
+        # Coerce blank strings to NaN, then impute with median.
         df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce")
         df["TotalCharges"] = df["TotalCharges"].fillna(df["TotalCharges"].median())
 
@@ -40,6 +44,7 @@ def preprocess(
         stratify=y,
     )
 
+    # One-hot encode categoricals and align train/test columns.
     X_train = pd.get_dummies(X_train_raw, drop_first=False)
     X_test = pd.get_dummies(X_test_raw, drop_first=False)
     X_train, X_test = X_train.align(X_test, join="left", axis=1, fill_value=0)
